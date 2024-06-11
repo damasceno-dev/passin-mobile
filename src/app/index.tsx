@@ -1,4 +1,4 @@
-import {Alert, Image, StatusBar, Text, View} from "react-native";
+import {Alert, Image, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import {Input} from "@/components/input";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {colors} from "@/styles/colors";
