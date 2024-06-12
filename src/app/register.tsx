@@ -29,6 +29,7 @@ export default function Register() {
             }
             
         } catch (error) {
+            setIsLoading(false);
             console.log(error);
             if (axios.isAxiosError(error)) {
                 console.log(error.response?.data.message);
@@ -40,9 +41,7 @@ export default function Register() {
                 }
             }
             Alert.alert("Inscrição", "Não foi possível fazer a inscrição");
-        } finally {
-            setIsLoading(false);
-        }
+        } 
         
     }
     
