@@ -5,16 +5,45 @@ import {colors} from "@/styles/colors";
 import {Button} from "@/components/button";
 import {Link, router} from "expo-router";
 import {useState} from "react";
-
+import {api} from "@/server/api"
+import axios from "axios";
+const EVENT_ID = "9E9BD979-9D10-4915-B339-3786B1634F33";
 export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    function handleRegister() {
+    const [isLoading, setIsLoading] = useState(false);
+    async function handleRegister() {
         if (!name.trim() || !email.trim()) {
             return Alert.alert("Inscrição", "Preencha todos campos!")
         }
         
-        router.push("/ticket")
+        try {
+            setIsLoading(true);
+            const registeredResponse = await api.post(`/api/attendees/${EVENT_ID}/register`, {
+                name, email
+            })
+            if (registeredResponse.data.id) {
+                Alert.alert("Inscrição", "Inscrição realizada com sucesso!", [
+                    {text: "OK", onPress: () => router.push("/ticket")}
+                ]);
+            }
+            
+        } catch (error) {
+            console.log(error);
+            if (axios.isAxiosError(error)) {
+                console.log(error.response?.data.message);
+                if (String(error.response?.data.message).includes("You can't register twice for the same event")) {
+                    return Alert.alert("Inscrição", "Este e-mail já está cadastrado")
+                }
+                if (String(error.response?.data.message).includes("There is no room for this event")) {
+                    return Alert.alert("Inscrição", "Este evento está lotado")
+                }
+            }
+            Alert.alert("Inscrição", "Não foi possível fazer a inscrição");
+        } finally {
+            setIsLoading(false);
+        }
+        
     }
     
     return (
@@ -42,7 +71,7 @@ export default function Register() {
                     />
                     <Input.Field placeholder="E-mail" keyboardType="email-address" onChangeText={setEmail}></Input.Field>
                 </Input>
-                <Button title="Realizar inscrição" onPress={handleRegister}/>
+                <Button title="Realizar inscrição" onPress={handleRegister} isLoading={isLoading}/>
                 <Link href="/" className="text-gray-100 text-base font-bold text-center mt-8">
                     Já possui ingresso?
                 </Link>

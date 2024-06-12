@@ -1,13 +1,15 @@
-import {StatusBar, View, Text, ScrollView, TouchableOpacity, Alert} from "react-native";
+import {StatusBar, View, Text, ScrollView, TouchableOpacity, Alert, Modal} from "react-native";
 import {Header} from "@/components/header";
 import {Credential} from "@/components/credential";
 import {FontAwesome} from "@expo/vector-icons";
 import {colors} from "@/styles/colors";
 import {Button} from "@/components/button";
 import {useState} from "react";
-import * as ImagePicker from "expo-image-picker";  
+import * as ImagePicker from "expo-image-picker";
+import {QRCode} from "@/components/qrcode";  
 export default function Ticket() {
     const [image, setImage] = useState("");
+    const [showQRCode, setShowQRCode] = useState(false);
     
     async function handleSelectImage() {
         try {
@@ -31,7 +33,7 @@ export default function Ticket() {
             <Header title="Minha Credencial"></Header>
             
             <ScrollView className="-mt-28 -z-10" contentContainerClassName="px-8 pb-8">
-                <Credential image={image} onChangeAvatar={handleSelectImage}/>
+                <Credential image={image} onChangeAvatar={handleSelectImage} onShowQRCode={() => setShowQRCode(true)}/>
                 <FontAwesome name="angle-double-down" size={24} color={colors.gray[300]} className="self-center my-6"/>
                 <Text className="text-white font-bold text-2xl mt-4">Compartilhar credencial</Text>
                 <Text className="text-white font-regular text-base mt-1 mb-6">Mostre ao mundo que você vai participar do Unite Summit!</Text>
@@ -40,6 +42,15 @@ export default function Ticket() {
                     <Text className="text-base text-white font-bold text-center ">Remover Ingresso</Text>
                 </TouchableOpacity>
             </ScrollView>
+            
+            <Modal visible={showQRCode} statusBarTranslucent animationType="fade">
+                <View className="flex-1 bg-green-500 items-center justify-center">
+                    <QRCode value="teste" size={300}></QRCode>
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => setShowQRCode(false)}>
+                        <Text className="font-body text-orange-500 mt-10">Fechar</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </View>
     )
 }
